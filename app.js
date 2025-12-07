@@ -328,7 +328,11 @@ document.getElementById('searchForm').addEventListener('submit', (ev) => {
 });
 
 // Close dropdowns when clicking outside
-document.addEventListener('click', () => {
+document.addEventListener('click', (e) => {
+  // Don't close if clicking inside a dropdown or menu
+  if (e.target.closest('.section-menu-dropdown, .tile-menu-dropdown, .menu-dropdown, .section-actions, .tile-menu, .menu-container')) {
+    return;
+  }
   document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
 });
 

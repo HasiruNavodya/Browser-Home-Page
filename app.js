@@ -19,7 +19,6 @@ function updateClock() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  const tz = Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata' }).resolvedOptions().timeZone;
   $clock.innerHTML = `${hours}:${minutes} <span class="tz-suffix">IST</span>`;
   
   // Update other timezones
@@ -43,16 +42,11 @@ updateClock();
 setInterval(updateClock, 1000);
 
 // --- Menu toggle ---
-if ($menuButton) {
-  $menuButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (!$menuDropdown) { console.warn('menuDropdown element not found'); return; }
-    $menuDropdown.classList.toggle('active');
-    console.log('menu toggled, active=', $menuDropdown.classList.contains('active'));
-  });
-} else {
-  console.warn('menuButton element not found');
-}
+$menuButton.addEventListener('click', (e) => {
+  e.stopPropagation();
+  $menuDropdown.classList.toggle('active');
+});
+
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.menu-container')) {
     $menuDropdown.classList.remove('active');
@@ -244,15 +238,6 @@ function render() {
     p.appendChild(ph);
     $grid.appendChild(p);
   }
-
-  // Close dropdowns when clicking outside (single global handler)
-  // We'll attach a single handler once when script runs. Keep this local to render to ensure it's present.
-  // Remove any existing handler by using a namespaced function on window.
-  if (window._closeDropdownsHandler) document.removeEventListener('click', window._closeDropdownsHandler);
-  window._closeDropdownsHandler = function () {
-    document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
-  };
-  document.addEventListener('click', window._closeDropdownsHandler);
 }
 
 // --- Add/Edit dialog submit ---
@@ -285,9 +270,9 @@ $dialog.addEventListener('close', () => {
 
 // --- Reset ---
 document.getElementById('resetBtn').addEventListener('click', () => {
-  $menuDropdown.classList.remove('active');
   if (confirm('Clear all saved shortcuts? This cannot be undone.')) {
-    localStorage.removeItem(KEY); render();
+    localStorage.removeItem(KEY); 
+    render();
   }
 });
 
@@ -295,10 +280,12 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 const addSectionBtn = document.getElementById('addSectionBtn');
 if (addSectionBtn) {
   addSectionBtn.addEventListener('click', () => {
-    $menuDropdown.classList.remove('active');
     const title = prompt('Section title', 'New section');
     if (title) {
-      const data = getData(); data.push({ title: String(title).trim(), items: [] }); setData(data); render();
+      const data = getData(); 
+      data.push({ title: title.trim(), items: [] }); 
+      setData(data); 
+      render();
     }
   });
 }
@@ -307,13 +294,12 @@ if (addSectionBtn) {
 const addTimezoneBtn = document.getElementById('addTimezoneBtn');
 if (addTimezoneBtn) {
   addTimezoneBtn.addEventListener('click', () => {
-    $menuDropdown.classList.remove('active');
     const name = prompt('Timezone name (e.g., EST, GMT)', 'New timezone');
     if (!name) return;
     const timezone = prompt('Timezone (e.g., America/New_York)', 'UTC');
     if (!timezone) return;
     const timezones = getTimezones();
-    timezones.push({ name: String(name).trim(), timezone: String(timezone).trim() });
+    timezones.push({ name: name.trim(), timezone: timezone.trim() });
     setTimezones(timezones);
     updateClock();
   });
@@ -329,6 +315,11 @@ document.getElementById('searchForm').addEventListener('submit', (ev) => {
     new URL(asUrl);
     ev.preventDefault(); location.href = asUrl;
   } catch {}
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', () => {
+  document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
 });
 
 // Initial render

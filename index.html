@@ -1,0 +1,69 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Start</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Utility toolbar -->
+  <div class="toolbar" aria-label="Shortcuts tools">
+    <div class="menu-container">
+      <button class="menu-button" id="menuButton" title="Menu">⋮</button>
+      <div class="menu-dropdown" id="menuDropdown">
+        <!-- Inline buttons moved into page; keep reset here -->
+        <button id="resetBtn" title="Clear all saved shortcuts">🗑️ Reset all</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <h1 class="clock" id="clock"></h1>
+    <div id="timezones" class="timezones"></div>
+
+    <div class="sections-controls">
+      <button id="addSectionBtn" title="Add a new section">+ Add section</button>
+    </div>
+
+    <!-- Google search -->
+    <form id="searchForm" class="search" role="search" action="https://www.google.com/search" method="GET">
+      <a href="https://www.google.com" class="google-link" title="Go to Google">
+        <img src="https://www.google.com/favicon.ico" alt="Google" class="google-icon" />
+      </a>
+      <input id="q" name="q" autocomplete="on" placeholder="Search Google or type a URL" aria-label="Search" />
+      <button type="submit" aria-label="Search">🔍</button>
+    </form>
+
+    <!-- Shortcut tiles -->
+    <section id="grid" class="grid" aria-label="Shortcuts"></section>
+
+    <div class="timezones-controls">
+      <button id="addTimezoneBtn" title="Add a new timezone">+ Add timezone</button>
+    </div>
+  </main>
+
+  <!-- Add/edit dialog -->
+  <dialog id="shortcutDialog">
+    <div class="dialog-title">Add shortcut</div>
+    <form method="dialog" id="shortcutForm">
+      <div class="field">
+        <label for="name">Name</label>
+        <input id="name" name="name" placeholder="e.g., YouTube" required />
+      </div>
+      <div class="field">
+        <label for="url">URL</label>
+        <input id="url" name="url" inputmode="url" placeholder="https://example.com" required />
+        <small>Tip: If you omit the protocol, we'll assume <code>https://</code>.</small>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelShortcut" value="cancel">Cancel</button>
+        <button class="btn primary" id="saveShortcut" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

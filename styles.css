@@ -442,10 +442,6 @@ main {
 }
 .tile-menu-dropdown button.danger { color: #ffccd1; }
 
-.close {
-  display: none;
-}
-
 /* Plus tile */
 .tile.plus {
   justify-content: center;

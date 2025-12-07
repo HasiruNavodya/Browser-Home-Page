@@ -19,7 +19,6 @@ function updateClock() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
   const minutes = String(now.getMinutes()).padStart(2, '0');
-  const tz = Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Kolkata' }).resolvedOptions().timeZone;
   $clock.innerHTML = `${hours}:${minutes} <span class="tz-suffix">IST</span>`;
   
   // Update other timezones
@@ -35,7 +34,17 @@ function updateClock() {
       hour12: false
     });
     const time = formatter.format(now);
-    tzDiv.innerHTML = `<span class="tz-time">${time}</span> <span class="tz-name">${tz.name}</span>`;
+    
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'tz-time';
+    timeSpan.textContent = time;
+    
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'tz-name';
+    nameSpan.textContent = tz.name;
+    
+    tzDiv.appendChild(timeSpan);
+    tzDiv.appendChild(nameSpan);
     $timezones.appendChild(tzDiv);
   });
 }
@@ -43,20 +52,9 @@ updateClock();
 setInterval(updateClock, 1000);
 
 // --- Menu toggle ---
-if ($menuButton) {
-  $menuButton.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (!$menuDropdown) { console.warn('menuDropdown element not found'); return; }
-    $menuDropdown.classList.toggle('active');
-    console.log('menu toggled, active=', $menuDropdown.classList.contains('active'));
-  });
-} else {
-  console.warn('menuButton element not found');
-}
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.menu-container')) {
-    $menuDropdown.classList.remove('active');
-  }
+$menuButton.addEventListener('click', (e) => {
+  e.stopPropagation();
+  $menuDropdown.classList.toggle('active');
 });
 
 // --- LocalStorage helpers ---
@@ -111,7 +109,7 @@ function faviconFor(u) {
 
 
 // Render helpers (safe DOM creation)
-function createTile(item, onRemove, onEdit, section, ii) {
+function createTile(item, onRemove, onEdit) {
   const a = document.createElement('a');
   a.className = 'tile';
   a.href = item.url;
@@ -213,7 +211,7 @@ function render() {
         $name.value = item.name; $url.value = item.url;
         $dialogTitle.textContent = 'Edit shortcut';
         $dialog.showModal();
-      }, section, ii);
+      });
       secGrid.appendChild(tile);
     });
 
@@ -244,15 +242,6 @@ function render() {
     p.appendChild(ph);
     $grid.appendChild(p);
   }
-
-  // Close dropdowns when clicking outside (single global handler)
-  // We'll attach a single handler once when script runs. Keep this local to render to ensure it's present.
-  // Remove any existing handler by using a namespaced function on window.
-  if (window._closeDropdownsHandler) document.removeEventListener('click', window._closeDropdownsHandler);
-  window._closeDropdownsHandler = function () {
-    document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
-  };
-  document.addEventListener('click', window._closeDropdownsHandler);
 }
 
 // --- Add/Edit dialog submit ---
@@ -285,9 +274,9 @@ $dialog.addEventListener('close', () => {
 
 // --- Reset ---
 document.getElementById('resetBtn').addEventListener('click', () => {
-  $menuDropdown.classList.remove('active');
   if (confirm('Clear all saved shortcuts? This cannot be undone.')) {
-    localStorage.removeItem(KEY); render();
+    localStorage.removeItem(KEY); 
+    render();
   }
 });
 
@@ -295,10 +284,12 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 const addSectionBtn = document.getElementById('addSectionBtn');
 if (addSectionBtn) {
   addSectionBtn.addEventListener('click', () => {
-    $menuDropdown.classList.remove('active');
     const title = prompt('Section title', 'New section');
     if (title) {
-      const data = getData(); data.push({ title: String(title).trim(), items: [] }); setData(data); render();
+      const data = getData(); 
+      data.push({ title: title.trim(), items: [] }); 
+      setData(data); 
+      render();
     }
   });
 }
@@ -307,13 +298,12 @@ if (addSectionBtn) {
 const addTimezoneBtn = document.getElementById('addTimezoneBtn');
 if (addTimezoneBtn) {
   addTimezoneBtn.addEventListener('click', () => {
-    $menuDropdown.classList.remove('active');
     const name = prompt('Timezone name (e.g., EST, GMT)', 'New timezone');
     if (!name) return;
     const timezone = prompt('Timezone (e.g., America/New_York)', 'UTC');
     if (!timezone) return;
     const timezones = getTimezones();
-    timezones.push({ name: String(name).trim(), timezone: String(timezone).trim() });
+    timezones.push({ name: name.trim(), timezone: timezone.trim() });
     setTimezones(timezones);
     updateClock();
   });
@@ -329,6 +319,18 @@ document.getElementById('searchForm').addEventListener('submit', (ev) => {
     new URL(asUrl);
     ev.preventDefault(); location.href = asUrl;
   } catch {}
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  // Close main menu dropdown
+  if (!e.target.closest('.menu-container')) {
+    $menuDropdown.classList.remove('active');
+  }
+  // Close section and tile dropdowns
+  if (!e.target.closest('.section-menu-dropdown, .tile-menu-dropdown, .menu-dropdown, .section-actions, .tile-menu, .menu-container')) {
+    document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
+  }
 });
 
 // Initial render

@@ -34,7 +34,17 @@ function updateClock() {
       hour12: false
     });
     const time = formatter.format(now);
-    tzDiv.innerHTML = `<span class="tz-time">${time}</span> <span class="tz-name">${tz.name}</span>`;
+    
+    const timeSpan = document.createElement('span');
+    timeSpan.className = 'tz-time';
+    timeSpan.textContent = time;
+    
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'tz-name';
+    nameSpan.textContent = tz.name;
+    
+    tzDiv.appendChild(timeSpan);
+    tzDiv.appendChild(nameSpan);
     $timezones.appendChild(tzDiv);
   });
 }
@@ -105,7 +115,7 @@ function faviconFor(u) {
 
 
 // Render helpers (safe DOM creation)
-function createTile(item, onRemove, onEdit, section, ii) {
+function createTile(item, onRemove, onEdit) {
   const a = document.createElement('a');
   a.className = 'tile';
   a.href = item.url;
@@ -207,7 +217,7 @@ function render() {
         $name.value = item.name; $url.value = item.url;
         $dialogTitle.textContent = 'Edit shortcut';
         $dialog.showModal();
-      }, section, ii);
+      });
       secGrid.appendChild(tile);
     });
 

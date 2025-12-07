@@ -57,12 +57,6 @@ $menuButton.addEventListener('click', (e) => {
   $menuDropdown.classList.toggle('active');
 });
 
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.menu-container')) {
-    $menuDropdown.classList.remove('active');
-  }
-});
-
 // --- LocalStorage helpers ---
 function getData() {
   try {
@@ -329,11 +323,14 @@ document.getElementById('searchForm').addEventListener('submit', (ev) => {
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', (e) => {
-  // Don't close if clicking inside a dropdown or menu
-  if (e.target.closest('.section-menu-dropdown, .tile-menu-dropdown, .menu-dropdown, .section-actions, .tile-menu, .menu-container')) {
-    return;
+  // Close main menu dropdown
+  if (!e.target.closest('.menu-container')) {
+    $menuDropdown.classList.remove('active');
   }
-  document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
+  // Close section and tile dropdowns
+  if (!e.target.closest('.section-menu-dropdown, .tile-menu-dropdown, .menu-dropdown, .section-actions, .tile-menu, .menu-container')) {
+    document.querySelectorAll('.section-menu-dropdown.active, .tile-menu-dropdown.active').forEach(d => d.classList.remove('active'));
+  }
 });
 
 // Initial render

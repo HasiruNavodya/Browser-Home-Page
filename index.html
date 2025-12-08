@@ -13,18 +13,17 @@
     <div class="menu-container">
       <button class="menu-button" id="menuButton" title="Menu">⋮</button>
       <div class="menu-dropdown" id="menuDropdown">
-        <!-- Inline buttons moved into page; keep reset here -->
-        <button id="resetBtn" title="Clear all saved shortcuts">🗑️ Reset all</button>
+        <button id="addSectionBtn" title="Add a new section">Add section</button>
+        <button id="addTimezoneBtn" title="Add a new timezone">Add timezone</button>
+        <button id="resetBtn" title="Clear all saved shortcuts">Reset all</button>
       </div>
     </div>
   </div>
 
   <main>
-    <h1 class="clock" id="clock"></h1>
-    <div id="timezones" class="timezones"></div>
-
-    <div class="sections-controls">
-      <button id="addSectionBtn" title="Add a new section">+ Add section</button>
+    <div class="time-container">
+      <h1 class="clock" id="clock"></h1>
+      <div id="timezones" class="timezones"></div>
     </div>
 
     <!-- Google search -->
@@ -38,10 +37,6 @@
 
     <!-- Shortcut tiles -->
     <section id="grid" class="grid" aria-label="Shortcuts"></section>
-
-    <div class="timezones-controls">
-      <button id="addTimezoneBtn" title="Add a new timezone">+ Add timezone</button>
-    </div>
   </main>
 
   <!-- Add/edit dialog -->
@@ -63,6 +58,127 @@
       </div>
     </form>
   </dialog>
+
+  <!-- Add section dialog -->
+  <dialog id="sectionDialog">
+    <div class="dialog-title">Add section</div>
+    <form method="dialog" id="sectionForm">
+      <div class="field">
+        <label for="sectionName">Section name</label>
+        <input id="sectionName" name="sectionName" placeholder="e.g., Work, Personal" required />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelSection" value="cancel">Cancel</button>
+        <button class="btn primary" id="saveSection" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Add timezone dialog -->
+  <dialog id="timezoneDialog">
+    <div class="dialog-title">Add timezone</div>
+    <form method="dialog" id="timezoneForm">
+      <div class="field">
+        <label for="timezoneName">Display name</label>
+        <input id="timezoneName" name="timezoneName" placeholder="e.g., EST, PST" required />
+      </div>
+      <div class="field">
+        <label for="timezoneValue">Timezone</label>
+        <input id="timezoneValue" name="timezoneValue" placeholder="e.g., America/New_York, Europe/London" required />
+        <small>Enter an IANA timezone identifier. <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones" target="_blank" rel="noopener">See list</a></small>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelTimezone" value="cancel">Cancel</button>
+        <button class="btn primary" id="saveTimezone" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Rename section dialog -->
+  <dialog id="renameSectionDialog">
+    <div class="dialog-title">Rename section</div>
+    <form method="dialog" id="renameSectionForm">
+      <div class="field">
+        <label for="newSectionName">New name</label>
+        <input id="newSectionName" name="newSectionName" placeholder="e.g., Work, Personal" required />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelRenameSection" value="cancel">Cancel</button>
+        <button class="btn primary" id="saveRenameSection" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Rename shortcut dialog -->
+  <dialog id="renameShortcutDialog">
+    <div class="dialog-title">Rename shortcut</div>
+    <form method="dialog" id="renameShortcutForm">
+      <div class="field">
+        <label for="newShortcutName">New name</label>
+        <input id="newShortcutName" name="newShortcutName" placeholder="e.g., YouTube" required />
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" id="cancelRenameShortcut" value="cancel">Cancel</button>
+        <button class="btn primary" id="saveRenameShortcut" value="default">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Settings Button -->
+  <button id="settingsBtn" class="settings-fab" title="Settings">🔧</button>
+
+  <!-- Settings Dialog -->
+  <dialog id="settingsDialog">
+    <div class="dialog-title">Settings</div>
+    <form method="dialog" id="settingsForm">
+      <div class="field">
+        <label>Theme</label>
+        <div class="theme-options">
+          <button type="button" class="theme-btn" data-theme="default">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #1a1a1a 50%, #f5f5f5 50%);"></span>
+            <span>System</span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="midnight">
+            <span class="theme-preview" style="background: #0f172a;"></span>
+            <span>Midnight</span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="forest">
+            <span class="theme-preview" style="background: #052e16;"></span>
+            <span>Forest</span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="sunset">
+            <span class="theme-preview" style="background: #431407;"></span>
+            <span>Sunset</span>
+          </button>
+          <button type="button" class="theme-btn" data-theme="ocean">
+            <span class="theme-preview" style="background: #0c4a6e;"></span>
+            <span>Ocean</span>
+          </button>
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn primary" value="close">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Context Menu (Section) -->
+  <div id="contextMenu" class="context-menu">
+    <button id="ctxAddShortcut">Add shortcut</button>
+    <button id="ctxRenameSection">Rename section</button>
+    <button id="ctxDeleteSection" style="color: #ff4444;">Delete section</button>
+  </div>
+
+  <!-- Context Menu (Shortcut) -->
+  <div id="shortcutContextMenu" class="context-menu">
+    <button id="ctxRenameShortcut">Rename shortcut</button>
+    <button id="ctxDeleteShortcut" style="color: #ff4444;">Delete shortcut</button>
+  </div>
+
+  <!-- Context Menu (Timezone) -->
+  <div id="timezoneContextMenu" class="context-menu">
+    <button id="ctxDeleteTimezone" style="color: #ff4444;">Delete timezone</button>
+  </div>
 
   <script src="app.js"></script>
 </body>
